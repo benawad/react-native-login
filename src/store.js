@@ -1,4 +1,12 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import { createEpicMiddleware } from 'redux-observable';
+
+import rootEpic from './epics';
 import rootReducer from './reducers';
 
-export default createStore(rootReducer);
+const epicMiddleware = createEpicMiddleware(rootEpic);
+
+export default createStore(
+  rootReducer,
+  applyMiddleware(epicMiddleware)
+);

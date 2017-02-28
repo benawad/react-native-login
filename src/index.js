@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon } from 'native-base';
 import { Provider } from 'react-redux';
+import 'rxjs';
 import store from './store';
 import Signup from './components/signup';
 
