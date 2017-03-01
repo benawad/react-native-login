@@ -1,5 +1,6 @@
 import { createStore, combineReducers } from 'redux'
+import login from './login';
 
 export default combineReducers({
-  bob: () => 5,
+  login
 });

@@ -9,7 +9,7 @@ import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Rig
 import { Provider } from 'react-redux';
 import 'rxjs';
 import store from './store';
-import Signup from './components/signup';
+import Login from './components/login';
 
 export default class AppContainer extends React.Component {
   render() {
@@ -29,7 +29,7 @@ export default class AppContainer extends React.Component {
           </Header>
 
           <Content padder>
-              <Signup />
+              <Login />
           </Content>
 
           <Footer>

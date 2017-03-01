@@ -10,7 +10,7 @@ const host = 'http://5f020b7a.ngrok.io';
 const app = feathers()
   .configure(rest(host).axios(axios))
   .configure(feathers.hooks())
-  .configure(feathers.authentication({ storage: window.localStorage }));
+  .configure(feathers.authentication());
 
 const users = app.service('users');
 
@@ -28,6 +28,25 @@ const signupEpic = action$ =>
         }))
     );
 
+const loginEpic = action$ =>
+  action$.ofType('LOGIN_REQUESTED')
+    .mergeMap(action =>
+      fromPromise(app.authenticate({
+        type: 'local',
+        ...action.payload
+      }))
+        .map(response => ({
+          type: 'LOGIN_SUCCEEDED',
+          response
+        }))
+        .catch(error => Observable.of({
+          type: 'LOGIN_FAILED',
+          error
+        }))
+    );
+
+
 export default combineEpics(
-  signupEpic
+  signupEpic,
+  loginEpic
 );
