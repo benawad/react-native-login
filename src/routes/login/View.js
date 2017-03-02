@@ -7,19 +7,45 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { FormLabel, FormInput, Button } from 'react-native-elements'
-import { Field, reduxForm } from 'redux-form';
+import { FormLabel, FormInput, Button, FormValidationMessage } from 'react-native-elements'
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 
-const emailField = ({ input: { onChange, ...otherProps } }) => (
-  <FormInput onChangeText={onChange} {...otherProps} />
+const emailField = ({ input: { onChange, ...otherProps }, meta: { touched, error } }) => (
+  <View>
+    <FormInput onChangeText={onChange} {...otherProps} />
+    { touched && error &&  <FormValidationMessage>{ error }</FormValidationMessage> }
+  </View>
 );
 
-const passwordField = ({ input: { onChange, ...otherProps } }) => (
-  <FormInput onChangeText={onChange} {...otherProps} secureTextEntry />
+const passwordField = ({ input: { onChange, ...otherProps }, meta: { touched, error } }) => (
+  <View>
+    <FormInput onChangeText={onChange} {...otherProps} secureTextEntry />
+    { touched && error &&  <FormValidationMessage>{ error }</FormValidationMessage> }
+  </View>
 );
 
-const submit = ({ email, password }, login) => {
-  login(email, password);
+const submit = ({ email='', password='' }, login) => {
+  const errors = {
+    _error: 'Login failed!'
+  }
+
+  let error = false;
+
+  if (!email.trim()) {
+    errors.email = 'Required'
+    error = true;
+  }
+
+  if (!password.trim()) {
+    errors.password = 'Required'
+    error = true;
+  }
+  
+  if (error) {
+    throw new SubmissionError(errors);
+  } else {
+    login(email, password);
+  }
 }
 
 const login = ({ handleSubmit, actions: { login } }) => (
