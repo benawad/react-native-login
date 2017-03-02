@@ -6,6 +6,8 @@ import axios from 'axios';
 import feathers from 'feathers-client';
 import rest from 'feathers-rest/client';
 
+import { AsyncStorage } from 'react-native';
+
 const host = 'http://5f020b7a.ngrok.io';
 const app = feathers()
   .configure(rest(host).axios(axios))
@@ -45,8 +47,26 @@ const loginEpic = action$ =>
         }))
     );
 
+async function saveToken(token) {
+  try {
+    await AsyncStorage.setItem('@bananahub:token', token);
+  } catch (error) {
+    console.log('Error setting item for AsyncStorage');
+    console.log(error);
+  }
+}
+
+const saveTokenEpic = action$ =>
+  action$.ofType('LOGIN_SUCCEEDED')
+    .mergeMap(action =>
+      fromPromise(saveToken(action.response.token))
+        .map(x => ({
+          type: 'SET_ITEM_SUCCEEDED',
+        }))
+    );
 
 export default combineEpics(
   signupEpic,
-  loginEpic
+  loginEpic,
+  saveTokenEpic
 );
