@@ -32,7 +32,7 @@ export default class Login extends React.Component {
   render() {
     return (
       <Container>
-        <Content>
+        <Content padder>
           <Form>
             <Item floatingLabel>
               <Label>Email</Label>

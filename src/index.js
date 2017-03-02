@@ -8,8 +8,10 @@ import {
 import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon } from 'native-base';
 import { Provider } from 'react-redux';
 import 'rxjs';
+
 import store from './store';
-import Login from './components/login';
+import Router from './routes';
+
 
 export default class AppContainer extends React.Component {
   render() {
@@ -28,9 +30,7 @@ export default class AppContainer extends React.Component {
               <Right />
           </Header>
 
-          <Content padder>
-              <Login />
-          </Content>
+          <Router />
 
           <Footer>
               <FooterTab>
