@@ -1,6 +1,7 @@
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
+import { startSubmit, stopSubmit } from 'redux-form';
 
 import axios from 'axios';
 import feathers from 'feathers-client';
@@ -30,21 +31,32 @@ const signupEpic = action$ =>
         }))
     );
 
-const loginEpic = action$ =>
+const loginEpic = (action$, { getState, dispatch }) =>
   action$.ofType('LOGIN_REQUESTED')
+    .do(action => {
+      dispatch(startSubmit('login'));
+    })
     .mergeMap(action =>
       fromPromise(app.authenticate({
         type: 'local',
         ...action.payload
       }))
-        .map(response => ({
-          type: 'LOGIN_SUCCEEDED',
-          response
-        }))
-        .catch(error => Observable.of({
+        .map(response => {
+          dispatch(stopSubmit('login', {}));
+          return { 
+            type: 'LOGIN_SUCCEEDED',
+            response 
+          };
+        })
+      .catch(error => {
+        dispatch(stopSubmit('login', {
+          password: 'Wrong password',
+        }));
+        return Observable.of({
           type: 'LOGIN_FAILED',
           error
-        }))
+        });
+      })
     );
 
 async function saveToken(token) {
