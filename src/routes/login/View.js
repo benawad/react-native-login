@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { Container, Content, Form, Item, Input, Label, Button } from 'native-base';
+import { FormLabel, FormInput, Button } from 'react-native-elements'
 
 export default class Login extends React.Component {
 
@@ -31,28 +31,18 @@ export default class Login extends React.Component {
 
   render() {
     return (
-      <Container>
-        <Content padder>
-          <Form>
-            <Item floatingLabel>
-              <Label>Email</Label>
-              <Input 
-                value={this.state.email} 
-                onChangeText={email => this.setState({email})} />
-            </Item>
-            <Item floatingLabel>
-              <Label>Password</Label>
-              <Input 
-                value={this.state.password} 
-                onChangeText={password => this.setState({password})} 
-                secureTextEntry/>
-            </Item>
-            <Button onPress={this.handleSubmit} style={{marginTop: 20}} block>
-                <Text>Login</Text>
-            </Button>
-          </Form>
-        </Content>
-      </Container>
+      <View>
+        <FormLabel>Email</FormLabel>
+        <FormInput 
+          value={this.state.email} 
+          onChangeText={email => this.setState({email})} />
+        <FormLabel>Password</FormLabel>
+        <FormInput 
+          value={this.state.password} 
+          onChangeText={password => this.setState({password})} 
+          secureTextEntry/>
+        <Button onPress={this.handleSubmit} title='Login' />
+      </View>
     );
   }
 }

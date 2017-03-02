@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { Container, Content, Form, Item, Input, Label, Button } from 'native-base';
+import { FormLabel, FormInput, Button } from 'react-native-elements'
 
 export default class Signup extends React.Component {
 
@@ -35,40 +35,26 @@ export default class Signup extends React.Component {
 
   render() {
     return (
-      <Container>
-        <Content>
-          <Form>
-            <Item floatingLabel>
-              <Label>Username</Label>
-              <Input 
-                value={this.state.username} 
-                onChangeText={username => this.setState({username})} />
-            </Item>
-            <Item floatingLabel>
-              <Label>Email</Label>
-              <Input 
-                value={this.state.email} 
-                onChangeText={email => this.setState({email})} />
-            </Item>
-            <Item floatingLabel>
-              <Label>Password</Label>
-              <Input 
-                value={this.state.password} 
-                onChangeText={password => this.setState({password})} 
-                secureTextEntry/>
-            </Item>
-            <Item floatingLabel>
-              <Label>Room Number</Label>
-              <Input 
-                value={this.state.room_num} 
-                onChangeText={room_num => this.setState({room_num})} />
-            </Item>
-            <Button onPress={this.handleSubmit} style={{marginTop: 20}} block>
-                <Text>Sign Up</Text>
-            </Button>
-          </Form>
-        </Content>
-      </Container>
+      <View>
+        <FormLabel>Username</FormLabel>
+        <FormInput 
+          value={this.state.username} 
+          onChangeText={username => this.setState({username})} />
+        <FormLabel>Email</FormLabel>
+        <FormInput 
+          value={this.state.email} 
+          onChangeText={email => this.setState({email})} />
+        <FormLabel>Password</FormLabel>
+        <FormInput 
+          value={this.state.password} 
+          onChangeText={password => this.setState({password})} 
+          secureTextEntry/>
+        <FormLabel>Room Number</FormLabel>
+        <FormInput 
+          value={this.state.room_num} 
+          onChangeText={room_num => this.setState({room_num})} />
+        <Button onPress={this.handleSubmit} title='Sign Up' />
+      </View>
     );
   }
 }
