@@ -10,6 +10,7 @@ import rest from 'feathers-rest/client';
 import { AsyncStorage } from 'react-native';
 
 const host = 'http://5f020b7a.ngrok.io';
+const userPath = host + '/users';
 const app = feathers()
   .configure(rest(host).axios(axios))
   .configure(feathers.hooks())
@@ -23,7 +24,7 @@ const signupEpic = (action$, { getState, dispatch }) =>
       dispatch(startSubmit('signup'));
     })
     .mergeMap(action =>
-      fromPromise(users.create(action.payload))
+      fromPromise(axios.post(userPath, action.payload))
         .map(response => {
           dispatch(stopSubmit('signup', {}));
           return {
@@ -31,13 +32,10 @@ const signupEpic = (action$, { getState, dispatch }) =>
             response
           }
         })
-        .catch(eresp => { 
-          console.log('eresp:');
-          console.log(eresp);
-          console.log(typeof(eresp));
+        .catch(({ response: { data } }) => { 
           let error = {};
-          if (eresp && eresp.errors && eresp.errors.length) {
-            const e1 = eresp.errors[0];
+          if (data && data.errors && data.errors.length) {
+            const e1 = data.errors[0];
             if (e1.path === 'username') {
               error[e1.path] = 'Username taken';
             } else if (e1.path === 'email') {
@@ -46,7 +44,7 @@ const signupEpic = (action$, { getState, dispatch }) =>
               error[e1.path] = e1.message;
             }
 
-          } else if (eresp && eresp.code === 500) {
+          } else if (data && data.code === 500) {
             error.username = 'Max 12 characters exceeded';
           } else {
             error.room_num = 'Something went wrong :( try again later.';
