@@ -7,54 +7,82 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { FormLabel, FormInput, Button } from 'react-native-elements'
+import { FormLabel, FormInput, Button, FormValidationMessage } from 'react-native-elements'
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 
-export default class Signup extends React.Component {
+const textField = ({ input: { onChange, ...otherProps }, meta: { touched, error } }) => (
+  <View>
+    <FormInput onChangeText={onChange} {...otherProps} />
+    { touched && error &&  <FormValidationMessage>{ error }</FormValidationMessage> }
+  </View>
+);
 
-  state = {
-    submitted: false,
-    username: '',
-    email: '',
-    password: '',
-    room_num: '',
+const numericField = ({ input: { onChange, ...otherProps }, meta: { touched, error } }) => (
+  <View>
+    <FormInput keyboardType="numeric" onChangeText={onChange} {...otherProps} />
+    { touched && error &&  <FormValidationMessage>{ error }</FormValidationMessage> }
+  </View>
+);
+
+const passwordField = ({ input: { onChange, ...otherProps }, meta: { touched, error } }) => (
+  <View>
+    <FormInput onChangeText={onChange} {...otherProps} secureTextEntry />
+    { touched && error &&  <FormValidationMessage>{ error }</FormValidationMessage> }
+  </View>
+);
+
+const submit = ({ username='', email='', password='', room_num='' }, signup) => {
+  const errors = {
+    _error: 'Login failed!'
   }
 
-  handleSubmit = () => {
-    if (!this.state.submitted) {
-      const { username, email, password, room_num } = this.state;
-      this.props.actions.signup(username, email, password, room_num);
-      this.setState({
-        submitted: true,
-        username: '',
-        email: '',
-        password: '',
-        room_num: '',
-      })
-    } 
+  let error = false;
+
+  if (!username.trim()) {
+    errors.username = 'Required'
+    error = true;
   }
 
-  render() {
-    return (
-      <View>
-        <FormLabel>Username</FormLabel>
-        <FormInput 
-          value={this.state.username} 
-          onChangeText={username => this.setState({username})} />
-        <FormLabel>Email</FormLabel>
-        <FormInput 
-          value={this.state.email} 
-          onChangeText={email => this.setState({email})} />
-        <FormLabel>Password</FormLabel>
-        <FormInput 
-          value={this.state.password} 
-          onChangeText={password => this.setState({password})} 
-          secureTextEntry/>
-        <FormLabel>Room Number</FormLabel>
-        <FormInput 
-          value={this.state.room_num} 
-          onChangeText={room_num => this.setState({room_num})} />
-        <Button onPress={this.handleSubmit} title='Sign Up' />
-      </View>
-    );
+  if (!email.trim()) {
+    errors.email = 'Required'
+    error = true;
+  }
+  
+  if (!password.trim()) {
+    errors.password = 'Required'
+    error = true;
+  }
+
+  const trimmed_rn = room_num.trim();
+
+  if (trimmed_rn !== '' && isNaN(trimmed_rn)) {
+    errors.room_num = 'Not a number'
+    error = true;
+  }
+
+  if (error) {
+    throw new SubmissionError(errors);
+  } else {
+    signup(username, email, password, room_num);
   }
 }
+
+const signup = ({ handleSubmit, actions: { signup } }) => (
+ <View>
+    <FormLabel>Username</FormLabel>
+    <Field name='username' component={textField} />
+    <FormLabel>Email</FormLabel>
+    <Field name='email' component={textField} />
+    <FormLabel>Password</FormLabel>
+    <Field name='password' component={passwordField} />
+    <FormLabel>Room Number</FormLabel>
+    <Field name='room_num' component={numericField} />
+    <Button 
+      title='Sign up'
+      onPress={handleSubmit(values => submit(values, signup))} />
+  </View>
+);
+
+export default reduxForm({
+  form: 'signup',
+})(signup);
