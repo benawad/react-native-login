@@ -11,14 +11,14 @@ import 'rxjs';
 import store from './store';
 import Router from './routes';
 
-import Login from './routes/login';
-
-
 export default class AppContainer extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <Router />
+        <View style={{flex: 1}}>
+          <StatusBar />
+          <Router />
+        </View>
       </Provider>
     );
   }

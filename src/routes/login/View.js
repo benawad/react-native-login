@@ -8,41 +8,32 @@ import {
   TextInput,
 } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements'
+import { Field, reduxForm } from 'redux-form';
 
-export default class Login extends React.Component {
+const emailField = ({ input: { onChange, ...otherProps } }) => (
+  <FormInput onChangeText={onChange} {...otherProps} />
+);
 
-  state = {
-    submitted: false,
-    email: '',
-    password: '',
-  }
+const passwordField = ({ input: { onChange, ...otherProps } }) => (
+  <FormInput onChangeText={onChange} {...otherProps} secureTextEntry />
+);
 
-  handleSubmit = () => {
-    if (!this.state.submitted) {
-      const { email, password} = this.state;
-      this.props.actions.login(email, password);
-      this.setState({
-        submitted: true,
-        email: '',
-        password: '',
-      })
-    } 
-  }
-
-  render() {
-    return (
-      <View>
-        <FormLabel>Email</FormLabel>
-        <FormInput 
-          value={this.state.email} 
-          onChangeText={email => this.setState({email})} />
-        <FormLabel>Password</FormLabel>
-        <FormInput 
-          value={this.state.password} 
-          onChangeText={password => this.setState({password})} 
-          secureTextEntry/>
-        <Button onPress={this.handleSubmit} title='Login' />
-      </View>
-    );
-  }
+const submit = ({ email, password }, login) => {
+  login(email, password);
 }
+
+const login = ({ handleSubmit, actions: { login } }) => (
+ <View>
+    <FormLabel>Email</FormLabel>
+    <Field name='email' component={emailField} />
+    <FormLabel>Password</FormLabel>
+    <Field name='password' component={passwordField} />
+    <Button 
+      title='Login'
+      onPress={handleSubmit(values => submit(values, login))} />
+  </View>
+);
+
+export default reduxForm({
+  form: 'login',
+})(login);
