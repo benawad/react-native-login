@@ -17,18 +17,46 @@ const app = feathers()
 
 const users = app.service('users');
 
-const signupEpic = action$ =>
+const signupEpic = (action$, { getState, dispatch }) =>
   action$.ofType('SIGNUP_REQUESTED')
+    .do(action => {
+      dispatch(startSubmit('signup'));
+    })
     .mergeMap(action =>
       fromPromise(users.create(action.payload))
-        .map(response => ({
-          type: 'SIGNUP_SUCCEEDED',
-          response
-        }))
-        .catch(error => Observable.of({
-          type: 'SIGNUP_FAILED',
-          error
-        }))
+        .map(response => {
+          dispatch(stopSubmit('signup', {}));
+          return {
+            type: 'SIGNUP_SUCCEEDED',
+            response
+          }
+        })
+        .catch(eresp => { 
+          console.log('eresp:');
+          console.log(eresp);
+          console.log(typeof(eresp));
+          let error = {};
+          if (eresp && eresp.errors && eresp.errors.length) {
+            const e1 = eresp.errors[0];
+            if (e1.path === 'username') {
+              error[e1.path] = 'Username taken';
+            } else if (e1.path === 'email') {
+              error[e1.path] = 'This email already has an account';
+            } else {
+              error[e1.path] = e1.message;
+            }
+
+          } else if (eresp && eresp.code === 500) {
+            error.username = 'Max 12 characters exceeded';
+          } else {
+            error.room_num = 'Something went wrong :( try again later.';
+          }
+          dispatch(stopSubmit('signup', error));
+          return Observable.of({
+            type: 'SIGNUP_FAILED',
+            error
+          })
+        })
     );
 
 const loginEpic = (action$, { getState, dispatch }) =>
